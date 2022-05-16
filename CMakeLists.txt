@@ -8,5 +8,8 @@ target_link_libraries( json2shell m cjson )
 add_executable( json2mkv   json2shell.c emitMKV.c json2shell.h)
 target_link_libraries( json2mkv m cjson )
 
-install( TARGETS json2shell json2mkv
+add_executable( json2rename   json2shell.c rename.c json2shell.h)
+target_link_libraries( json2rename m cjson )
+
+install( TARGETS json2shell json2mkv json2rename
          RUNTIME DESTINATION /usr/bin)

@@ -108,6 +108,14 @@ int emitSimpleTagI( const char * key, int value )
     printf( format, key, value );
 }
 
+/****************************************************/
+
+int startFile(const char * path)
+{
+    (void)path;
+    return 0;
+}
+
 int emitObject( cJSON * json )
 {
     int    result = 0;
@@ -225,3 +233,10 @@ int emitObject( cJSON * json )
 
     return result;
 }
+
+int finishFile(const char * path)
+{
+    (void)path;
+    return 0;
+}
+

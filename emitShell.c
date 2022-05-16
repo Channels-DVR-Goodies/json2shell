@@ -20,14 +20,61 @@
 #include "json2shell.h"
 
 
-int emitShellArray(cJSON * j )
+static int emitQuotedString( const char * str )
+{
+    const char * p;
+    char * q;
+    int quotedCount = strlen(str) + 2;
+    for ( p = str; *p != '\0'; ++p )
+    {
+        switch (*p)
+        {
+        case '"':
+            quotedCount++;
+            break;
+        }
+    }
+
+    char * quotedString = malloc(quotedCount);
+    if ( quotedString != NULL )
+    {
+        p = str;
+        q = quotedString;
+        *q++ = '"';
+        while (*p != '\0' )
+        {
+            if (*p == '"')
+            {
+                *q++ = '\\';
+            }
+            *q++ = *p++;
+        }
+        *q++ = '"';
+        *q = '\0';
+
+        printf( "%s", quotedString );
+
+        free( quotedString );
+    }
+
+}
+
+static int emitShellArray(cJSON * j )
 {
     printf( "( ");
     for ( cJSON * p = j; p != NULL; p = p->next )
     {
-        printf("\"%s\" ", p->valuestring );
+        emitQuotedString( p->valuestring );
+        fputc( ' ', stdout );
     }
-    printf( ")\n");
+    printf( ")");
+    return 0;
+}
+
+
+int startFile(const char * path)
+{
+    (void)path;
     return 0;
 }
 
@@ -39,15 +86,16 @@ int emitObject( cJSON * json )
     {
         if ( cJSON_IsString( j ) )
         {
-            printf( "%s=\"%s\"\n", j->string, j->valuestring);
+            printf( "%s=", j->string);
+            emitQuotedString( j->valuestring );
         }
         else if ( cJSON_IsNumber( j ))
         {
-            printf( "%s=%g\n", j->string, j->valuedouble);
+            printf( "%s=%g", j->string, j->valuedouble);
         }
         else if ( cJSON_IsBool( j ))
         {
-            printf( "%s=%d\n", j->string, j->valueint);
+            printf( "%s=%d", j->string, j->valueint);
         }
         else if ( cJSON_IsArray( j ))
         {
@@ -59,7 +107,14 @@ int emitObject( cJSON * json )
             fprintf( stderr, "internal error: nested objects not supported.\n");
             result = -1;
         }
+        fputc('\n',stdout);
     }
 
     return result;
+}
+
+int finishFile(const char * path)
+{
+    (void)path;
+    return 0;
 }

@@ -80,7 +80,9 @@ int processArg( char * arg )
                     }
                     else
                     {
+                        startFile(arg);
                         processTree( json );
+                        finishFile(arg);
 #if 0
                         char * jsonAsString = cJSON_Print( json );
                         fprintf( stdout, "%s\n", jsonAsString );
